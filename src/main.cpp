@@ -17,6 +17,7 @@ unsigned long interval = 30000;
 void setup()
 {
   Serial.begin(115200);
+  Serial.println("Starting up...");
 
   pinMode(PIN_LATCH, OUTPUT);
   pinMode(PIN_CLOCK, OUTPUT);

@@ -22,4 +22,4 @@
 #define ROWS 16
 
 // set your city or coords (https://github.com/chubin/wttr.in)
-#define WEATHER_LOCATION "51.233334,6.783333"
+#define WEATHER_LOCATION "58.412135, 15.561062"
