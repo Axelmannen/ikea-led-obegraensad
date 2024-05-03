@@ -27,9 +27,12 @@ void ClockPlugin::setup()
   previousMinutes = -1;
   previousHour = -1;
 
-  previousState = -1;
-  state = 2;
+  DIM_START = 21;
+  OFF_START = 22;
+  OFF_END = 7;
+  DIM_END = 9;
 
+  brightness = 5;
 }
 
 
@@ -37,52 +40,44 @@ void ClockPlugin::loop()
 {
   if (getLocalTime(&timeinfo))
   {
-    if (previousHour != timeinfo.tm_hour || previousMinutes != timeinfo.tm_min)
+    // Update every minute
+    if (previousMinutes != timeinfo.tm_min)
     {
-
-      // Determine state
+      // Determine brightness
       if (timeinfo.tm_hour >= DIM_START || timeinfo.tm_hour < DIM_END)
       {
         if (timeinfo.tm_hour >= OFF_START || timeinfo.tm_hour < OFF_END) {
-          state = 0;
+          brightness = 0;
         } else {
-          state = 1;
+          brightness = 5;
         }
       } else {
-        state = 2;
-      }
-
-      // Update brightness
-      if (state != previousState) {
-        if (state == 1) {
-          Screen.setBrightness(5);
-        } else if (state == 2) {
-          Screen.setBrightness(255);
-        }
+        brightness = 255;
       }
 
       Screen.clear();
-      if (state != 0) {
-        Screen.drawNumbers(3, 2, {(timeinfo.tm_hour - timeinfo.tm_hour % 10) / 10, timeinfo.tm_hour % 10});
-        Screen.drawNumbers(3, 9, {(timeinfo.tm_min - timeinfo.tm_min % 10) / 10, timeinfo.tm_min % 10});
+      if (brightness != 0) {
+        Screen.drawNumbers(3, 2, {(timeinfo.tm_hour - timeinfo.tm_hour % 10) / 10, timeinfo.tm_hour % 10}, brightness);
+        Screen.drawNumbers(3, 9, {(timeinfo.tm_min - timeinfo.tm_min % 10) / 10, timeinfo.tm_min % 10}, brightness);
       }
-      previousState = state;
     }
 
+    if (brightness == 255 && previousSeconds != timeinfo.tm_sec)
+    {
+      // Draw outline
+      // for (int i = 0; i < timeinfo.tm_sec + 1; i++) // Draw one more pixel to close the rectangle completely
+      // {
+      //   Screen.setPixel(OutlineX[i], OutlineY[i], 1, 5);
+      // }
+
+      // Draw seconds
+      Screen.setPixel(OutlineX[timeinfo.tm_sec], OutlineY[timeinfo.tm_sec], 1, 5);
+      Screen.setPixel(OutlineX[previousSeconds], OutlineY[previousSeconds], 0, 5);
+    }
+
+    previousSeconds = timeinfo.tm_sec;
     previousMinutes = timeinfo.tm_min;
     previousHour = timeinfo.tm_hour;
-  }
-  if (state == 2 && previousSeconds != timeinfo.tm_sec)
-  {
-    // Draw outline
-    // for (int i = 0; i < timeinfo.tm_sec + 1; i++) // Draw one more pixel to close the rectangle completely
-    // {
-    //   Screen.setPixel(OutlineX[i], OutlineY[i], 1, 5);
-    // }
-    // Draw seconds
-    Screen.setPixel(OutlineX[timeinfo.tm_sec], OutlineY[timeinfo.tm_sec], 1, 5);
-    Screen.setPixel(OutlineX[previousSeconds], OutlineY[previousSeconds], 0, 5);
-    previousSeconds = timeinfo.tm_sec;
   }
 }
 

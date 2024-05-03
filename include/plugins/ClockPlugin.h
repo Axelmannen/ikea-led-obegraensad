@@ -12,13 +12,12 @@ private:
   int previousHour;
 
   // Dim time must encapsulate off time
-  int DIM_START {21};
-  int OFF_START {22};
-  int OFF_END {7};
-  int DIM_END {9};
+  int DIM_START;
+  int OFF_START;
+  int OFF_END;
+  int DIM_END;
 
-  int previousState;
-  int state;
+  int brightness;
 
   short OutlineX[60];
   short OutlineY[60];
